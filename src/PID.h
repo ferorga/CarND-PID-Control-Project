@@ -1,50 +1,66 @@
 #ifndef PID_H
 #define PID_H
 
+#include <chrono>
+#include "LowPassFilter.h"
+
 class PID {
- public:
-  /**
-   * Constructor
-   */
-  PID();
-
-  /**
-   * Destructor.
-   */
-  virtual ~PID();
-
-  /**
-   * Initialize PID.
-   * @param (Kp_, Ki_, Kd_) The initial PID coefficients
-   */
-  void Init(double Kp_, double Ki_, double Kd_);
-
-  /**
-   * Update the PID error variables given cross track error.
-   * @param cte The current cross track error
-   */
-  void UpdateError(double cte);
-
-  /**
-   * Calculate the total PID error.
-   * @output The total PID error
-   */
-  double TotalError();
-
- private:
-  /**
-   * PID Errors
-   */
+public:
+  /*
+  * Errors
+  */
   double p_error;
   double i_error;
   double d_error;
+  bool I_sat;
+  double target;
+  double min;
+  double max;
 
-  /**
-   * PID Coefficients
-   */ 
+  /*
+  * Coefficients
+  */ 
   double Kp;
   double Ki;
   double Kd;
+  double Kt;
+  std::chrono::high_resolution_clock::time_point t0;
+  LowPassFilter lpf;
+
+  /*
+  * Constructor
+  */
+  PID();
+
+  /*
+  * Destructor.
+  */
+  virtual ~PID();
+
+  /*
+  * Initialize PID.
+  */
+  void Init(double Kp, double Ki, double Kd);
+
+  /*
+  * Update the PID error variables given cross track error.
+  */
+  void UpdateError(double cte);
+  
+  /*
+  * Calculate steering value
+  */
+  double GetOutput();
+
+  void SetKp(double Kp_);
+
+  void SetKd(double Kd_);
+
+  void SetTarget(double target_);
+
+  void SetMax(double max_);
+
+  void SetMin(double min_);
 };
 
-#endif  // PID_H
+#endif /* PID_H */
