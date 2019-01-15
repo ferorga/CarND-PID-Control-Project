@@ -1,7 +1,4 @@
 #include "PID.h"
-#include <iostream>
-
-using namespace std;
 
 PID::PID() {}
 

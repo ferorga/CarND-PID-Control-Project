@@ -31,14 +31,12 @@ string hasData(string s) {
   return "";
 }
 
-PID pid_st;
-PID pid_th;
 
 // Gain scheduling target values for steering PID
-double target_kp_0 = 0.15;
-double target_kp_max = 0.05;
+double target_kp_0 = 0.13;
+double target_kp_max = 0.07;
 
-double target_kd_0 = 0.04;
+double target_kd_0 = 0.06;
 double target_kd_max = 0.01;
 
 // Target throttle
@@ -47,17 +45,20 @@ double target_th = 0.45;
 int main() {
   uWS::Hub h;
 
+  PID pid_st;
+  PID pid_th;
+
   pid_st.Init(target_kp_0, 0.001, target_kd_0);
   pid_st.SetTarget(0.0);
   pid_st.SetMin(-1.0);
   pid_st.SetMax(1.0);
 
-  pid_th.Init(0.12, 0.01, 0.00);
+  pid_th.Init(0.13, 0.03, 0.00);
   pid_th.SetTarget(target_th);
   pid_th.SetMin(0.0);
   pid_th.SetMax(1.0);
 
-  h.onMessage([&pid_st](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, 
+  h.onMessage([&pid_st, &pid_th](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, 
                      uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
     // The 4 signifies a websocket message
