@@ -34,12 +34,14 @@ string hasData(string s) {
 PID pid_st;
 PID pid_th;
 
+// Gain scheduling target values for steering PID
 double target_kp_0 = 0.15;
 double target_kp_max = 0.05;
 
 double target_kd_0 = 0.04;
 double target_kd_max = 0.01;
 
+// Target throttle
 double target_th = 0.45;
 
 int main() {
@@ -80,6 +82,7 @@ int main() {
           pid_th.UpdateError(abs(cte));
           double throttle = pid_th.GetOutput();
 
+          // Linear gain scheduling with car speed
           double newKp = (target_kp_max - target_kp_0)/40.0 * speed + target_kp_0; 
           double newKd = (target_kd_max - target_kd_0)/40.0 * speed + target_kd_0; 
 

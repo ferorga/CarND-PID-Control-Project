@@ -12,10 +12,6 @@ public:
   double p_error;
   double i_error;
   double d_error;
-  bool I_sat;
-  double target;
-  double min;
-  double max;
 
   /*
   * Coefficients
@@ -23,7 +19,11 @@ public:
   double Kp;
   double Ki;
   double Kd;
-  double Kt;
+
+  bool I_sat;
+  double target;
+  double min;
+  double max;
   std::chrono::high_resolution_clock::time_point t0;
   LowPassFilter lpf;
 
@@ -40,7 +40,7 @@ public:
   /*
   * Initialize PID.
   */
-  void Init(double Kp, double Ki, double Kd);
+  void Init(double Kp_, double Ki_, double Kd_);
 
   /*
   * Update the PID error variables given cross track error.
@@ -52,14 +52,30 @@ public:
   */
   double GetOutput();
 
+  /*
+  * Set Kp gain
+  */
   void SetKp(double Kp_);
 
+  /*
+  * Set Kd gain
+  */
   void SetKd(double Kd_);
 
+
+  /*
+  * Set PID output target value (offset)
+  */
   void SetTarget(double target_);
 
+  /*
+  * Set PID max limit
+  */
   void SetMax(double max_);
 
+  /*
+  * Set PID min limit
+  */
   void SetMin(double min_);
 };
 

@@ -11,15 +11,14 @@ void PID::Init(double Kp_, double Ki_, double Kd_)
 {
     Kp = Kp_;
     Ki = Ki_;
-    Kd = Kd_;
-    Kt = 1;
+    Kd = Kd_;    
 
     p_error = 0.0;
     i_error = 0.0;
     d_error = 0.0;
     I_sat = false;
     t0 = std::chrono::high_resolution_clock::now();
-    lpf.setCutOffFrequency(15);
+    lpf.setCutOffFrequency(15); // 15 * 2 * pi Hz 
 }
 
 void PID::UpdateError(double cte) 
@@ -30,8 +29,10 @@ void PID::UpdateError(double cte)
   t0 = std::chrono::high_resolution_clock::now();
   double dt = ms.count()/1000.0;
 
+  // Differential error: Low-pass filter the differential of the cte
   d_error = lpf.update((cte - p_error)/dt, dt);
 
+  // Integral error: Limit the integral error to avoid wind-up
   if (p_error > 0.0 && cte < 0.0)
     i_error = 0.0;
   else if (p_error < 0.0 && cte > 0.0)
@@ -39,6 +40,7 @@ void PID::UpdateError(double cte)
   else if (!I_sat)
     i_error += cte * dt;
 
+  // Proportional error
   p_error = cte;  
 }
 
@@ -74,30 +76,22 @@ double PID::GetOutput()
       I_sat = false;
     }
 
-    //cout << "P: " << P << " D: " << D << " I: " << I <<endl;
-    
     // PID Output
     out = target - (P + I + D);
-    //cout << "t: " << target << " PID: " << (P + I + D) << " out: " << out <<endl;
-    // cout << "out: " << out  << endl;
 
-    // Anti wind-up
+    // Output Limit
     if (out > max)
     {   
       u = max;
-      cout << "SAT!" << endl;
     }
     else if (out < min)
     {
       u = min;
-      cout << "SAT!" << endl;
     }
     else
     {
       u = out;
     }
-
-    //cout << "min: " << min << " max: " << max << endl;
 
     return u;
 }
@@ -116,7 +110,6 @@ void PID::SetTarget(double target_)
 {
   target = target_;
 }
-
 
 void PID::SetMax(double max_)
 {
